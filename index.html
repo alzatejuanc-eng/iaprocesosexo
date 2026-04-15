@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProzAI — Levantamiento Inteligente de Procesos</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f1117;--ink70:#4a4d5e;--ink40:#9a9dae;--ink12:#eeeef3;--ink06:#f5f5f9;
+  --white:#ffffff;
+  --blue:#2563eb;--blues:#eff6ff;--bluem:#3b82f6;--bluedark:#1d4ed8;
+  --green:#16a34a;--greens:#f0fdf4;--greendark:#15803d;
+  --amber:#d97706;--ambers:#fffbeb;--amberdark:#92400e;
+  --red:#dc2626;--reds:#fef2f2;--reddark:#991b1b;
+  --purple:#7c3aed;--purples:#f5f3ff;
+  --teal:#0d9488;--teals:#f0fdfa;
+  --bd:rgba(15,17,23,0.09);--bdm:rgba(15,17,23,0.16);
+  --r:10px;--rs:7px;
+  --sans:'Inter',system-ui,sans-serif;
+  --serif:'Fraunces',Georgia,serif;
+  --sh:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(37,99,235,0.05);
+}
+body{font-family:var(--sans);background:var(--ink06);color:var(--ink);line-height:1.6;font-size:14px}
+
+.topnav{background:var(--ink);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-sq{width:32px;height:32px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:#fff}
+.nav-name{font-family:var(--serif);font-size:20px;color:#fff}
+.nav-sub{font-size:10px;color:#93c5fd;font-weight:600;letter-spacing:1.2px;text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-badge{font-size:11px;color:#93c5fd;border:1px solid rgba(147,197,253,.35);padding:3px 10px;border-radius:16px;font-weight:500}
+.nav-pill{font-size:10px;background:#16a34a;color:#fff;padding:3px 10px;border-radius:12px;font-weight:600}
+
+.screen{display:none}.screen.active{display:block}
+.main{max-width:840px;margin:0 auto;padding:24px 20px 80px}
+.card{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:12px;box-shadow:var(--sh)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.card-icon{width:36px;height:36px;border-radius:var(--rs);background:var(--blues);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.card-title{font-size:15px;font-weight:600;color:var(--ink);font-family:var(--serif)}
+.card-desc{font-size:11px;color:var(--ink70);margin-top:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fld label{font-size:12px;font-weight:600;color:var(--ink)}
+.fld .hint{font-size:11px;color:var(--ink70);line-height:1.4;margin-bottom:2px}
+.req{color:var(--red)}
+input[type=text],input[type=password],select,textarea{width:100%;border:1px solid var(--bdm);border-radius:var(--rs);padding:9px 11px;font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--white);transition:border-color .15s,box-shadow .15s;resize:vertical}
+textarea{min-height:80px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:var(--rs);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--bdm);background:var(--white);color:var(--ink);transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--ink06)}
+.btn-p{background:var(--blue);border-color:var(--blue);color:#fff}.btn-p:hover{background:var(--bluedark)}
+.btn-s{background:var(--green);border-color:var(--green);color:#fff}.btn-s:hover{background:var(--greendark)}
+.btn-d{background:var(--reds);border-color:#fca5a5;color:var(--red)}
+.btn-row{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--bd)}
+
+.stepper{background:var(--white);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;overflow-x:auto}
+.st-i{display:flex;align-items:center;flex-shrink:0;padding:12px 0}
+.st-n{width:24px;height:24px;border-radius:50%;background:var(--ink12);color:var(--ink70);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+.st-n.on{background:var(--blue);color:#fff}.st-n.ok{background:var(--green);color:#fff}
+.st-l{font-size:12px;color:var(--ink70);font-weight:500;margin-left:6px;white-space:nowrap}
+.st-l.on{color:var(--blue);font-weight:600}.st-l.ok{color:var(--green)}
+.st-sep{color:var(--ink40);font-size:13px;padding:0 10px;flex-shrink:0}
+
+.roles-wrap{border:1px solid var(--bdm);border-radius:var(--rs);background:var(--white);overflow:hidden;transition:border-color .15s}
+.roles-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.roles-chips{min-height:42px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px}
+.rchip{display:inline-flex;align-items:center;gap:5px;background:var(--blues);color:var(--bluedark);font-size:12px;font-weight:600;padding:3px 8px 3px 11px;border-radius:14px}
+.rchip-x{width:16px;height:16px;border-radius:50%;background:rgba(29,78,216,.2);color:var(--bluedark);border:none;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
+.rchip-x:hover{background:var(--red);color:#fff}
+.roles-inp-row{display:flex;border-top:1px solid var(--bd)}
+.roles-inp{flex:1;padding:9px 12px;font-family:var(--sans);font-size:13px;color:var(--ink);background:transparent;border:none;outline:none;width:auto}
+.roles-add{padding:9px 15px;background:var(--blue);color:#fff;border:none;border-left:1px solid rgba(255,255,255,.2);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer}
+.roles-add:hover{background:var(--bluedark)}
+.roles-foot{padding:5px 11px;background:var(--ink06);border-top:1px solid var(--bd);font-size:11px;color:var(--ink70);display:flex;align-items:center;gap:7px}
+.rcnt{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px}
+
+.dig-sc{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:7px}
+.dopt{border:1px solid var(--bdm);border-radius:var(--rs);padding:8px 4px;text-align:center;cursor:pointer;transition:all .15s;background:var(--white)}
+.dopt:hover{border-color:var(--blue);background:var(--blues)}
+.dopt.sel{border-color:var(--blue);background:var(--blues)}
+.dnum{display:block;font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink70);line-height:1.2}
+.dopt.sel .dnum{color:var(--blue)}
+.dlbl{display:block;font-size:9px;color:var(--ink70);font-weight:500;line-height:1.3;margin-top:2px}
+
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mc{background:var(--ink06);border:1px solid var(--bd);border-radius:var(--rs);padding:12px}
+.mch{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.mci{width:28px;height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.mcl{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3}
+.mcw{font-size:10px;color:var(--ink70);line-height:1.3;margin-top:1px}
+.mci input{border:1px solid var(--bdm);border-radius:5px;padding:7px 9px;font-size:13px;font-family:var(--sans);color:var(--ink);background:var(--white);width:100%}
+
+.proc-list{display:grid;gap:10px}
+.pcard{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px}
+.pcard-ico{width:38px;height:38px;border-radius:var(--rs);background:var(--blues);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.pcard-info{flex:1;min-width:0}
+.pcard-name{font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard-meta{font-size:11px;color:var(--ink70);margin-top:2px}
+.pcard-acts{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.empty-st{text-align:center;padding:48px 20px}
+.e-ico{font-size:44px;margin-bottom:12px;display:block}
+
+.diag-bn{background:var(--ink);border-radius:var(--r);padding:16px 20px;color:#fff;margin-bottom:12px}
+.diag-nm{font-size:20px;font-weight:600;font-family:var(--serif);margin-bottom:4px}
+.diag-mt{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px}
+.diag-tgs{display:flex;flex-wrap:wrap;gap:6px}
+.dtag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8);font-size:11px;padding:3px 10px;border-radius:10px}
+
+.flow{display:flex;flex-direction:column;padding:4px 0}
+.frow{display:flex;gap:0;align-items:flex-start}
+.flcol{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0}
+.fcirc{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;z-index:1}
+.fline{width:2px;flex:1;min-height:14px;background:var(--bd)}
+.fbody{flex:1;margin-left:10px;margin-bottom:10px;border-radius:var(--rs);padding:10px 12px;border:1px solid}
+.fb-n{background:var(--ink06);border-color:var(--bd)}
+.fb-dec{background:var(--ambers);border-color:#fcd34d}
+.fb-st{background:var(--blues);border-color:#93c5fd}
+.fb-end{background:var(--greens);border-color:#86efac}
+.fb-wait{background:#fef3c7;border-color:#fbbf24}
+.fb-bad{background:var(--reds);border-color:#fca5a5}
+.ftitle{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.fdesc{font-size:12px;color:var(--ink70);line-height:1.4}
+.ftags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.ftag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:7px}
+.ft-am{background:var(--ambers);color:var(--amberdark)}
+.ft-re{background:var(--reds);color:var(--reddark)}
+.ft-bl{background:var(--blues);color:var(--bluedark)}
+.ft-gr{background:var(--greens);color:var(--greendark)}
+
+.sh{display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.sb{width:3px;height:18px;border-radius:2px;flex-shrink:0}
+.stitle{font-size:15px;font-weight:600;color:var(--ink);font-family:var(--serif)}
+.scnt{font-size:11px;color:var(--ink70);margin-left:auto;font-weight:500}
+
+.cmphead{display:grid;grid-template-columns:1fr 28px 1fr;gap:6px;margin-bottom:10px;align-items:center}
+.clbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:5px 12px;border-radius:12px;text-align:center}
+.c-asis{background:var(--reds);color:var(--red)}.c-tobe{background:var(--greens);color:var(--green)}
+.carr{font-size:18px;color:var(--ink40);text-align:center}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sflow{display:flex;flex-direction:column}
+.srow{display:flex;gap:0}
+.slcol{display:flex;flex-direction:column;align-items:center;width:30px;flex-shrink:0}
+.scirc{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+.sline{width:2px;flex:1;min-height:12px}
+.sbody{flex:1;margin-left:8px;margin-bottom:8px;padding:9px 11px;border-radius:var(--rs);border:1px solid}
+.sb-an{background:var(--ink06);border-color:var(--bd)}
+.sb-ab{background:var(--reds);border-color:#fca5a5}
+.sb-tn{background:var(--greens);border-color:#86efac}
+.sb-tnw{background:var(--blues);border-color:#93c5fd}
+.sname{font-size:12px;font-weight:600;margin-bottom:2px}
+.sdesc{font-size:11px;color:var(--ink70);line-height:1.4}
+.stgs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.stg{font-size:10px;font-weight:600;padding:1px 6px;border-radius:7px}
+.stg-r{background:var(--blues);color:var(--bluedark)}
+.stg-t{background:var(--ambers);color:var(--amberdark)}
+.stg-s{background:var(--ink12);color:var(--ink70)}
+.stg-b{background:var(--reds);color:var(--reddark)}
+.stg-g{background:var(--greens);color:var(--greendark)}
+
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px}
+.wcard{border-radius:var(--rs);padding:11px;border:1px solid}
+.wc-f{background:var(--reds);border-color:#fca5a5}
+.wc-o{background:var(--greens);border-color:#86efac;opacity:.65}
+.wico{font-size:18px;margin-bottom:4px}
+.wnm{font-size:11px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.wdc{font-size:11px;color:var(--ink70);line-height:1.4}
+.wbg{display:inline-block;font-size:9px;font-weight:700;margin-top:4px;padding:2px 6px;border-radius:7px}
+.wb-f{background:var(--red);color:#fff}.wb-o{background:var(--green);color:#fff}
+
+.dmaic-wrap{border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.dm-row{display:grid;grid-template-columns:72px 1fr;border-bottom:1px solid var(--bd)}
+.dm-row:last-child{border-bottom:none}
+.dm-ph{background:var(--ink);padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
+.dm-lt{font-size:20px;font-weight:600;color:#fff;line-height:1;font-family:var(--serif)}
+.dm-nm{font-size:8px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px}
+.dm-co{padding:10px 12px;font-size:12px;color:var(--ink);line-height:1.6;background:var(--white)}
+
+.ktbl{width:100%;border-collapse:collapse}
+.ktbl th{font-size:11px;font-weight:600;color:var(--ink70);padding:5px 9px;text-align:left;border-bottom:2px solid var(--bd)}
+.ktbl td{padding:8px 9px;border-bottom:1px solid var(--bd);font-size:12px}
+.ktbl tr:last-child td{border-bottom:none}
+.kn{font-weight:600;color:var(--ink)}.ka{color:var(--red)}.kt{color:var(--green);font-weight:600}
+.kd{font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;background:var(--greens);color:var(--green)}
+
+.rmlist{display:flex;flex-direction:column;gap:8px}
+.rmitem{display:flex;gap:10px;background:var(--white);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px}
+.rmnum{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px}
+.rmbody{flex:1}
+.rmact{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.rmimpact{font-size:11px;color:var(--ink70);line-height:1.4;margin-top:2px}
+.rmtgs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.rtag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px}
+.rtp{background:var(--blues);color:var(--bluedark)}
+.rtm{background:var(--ambers);color:var(--amberdark)}
+.rtt{background:var(--greens);color:var(--greendark)}
+.rtpl{background:var(--ink12);color:var(--ink70)}
+
+.matgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mati{background:var(--ink06);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 8px;text-align:center}
+.matsc{font-size:24px;font-weight:600;color:var(--blue);line-height:1;margin-bottom:2px;font-family:var(--serif)}
+.matsc span{font-size:12px;color:var(--ink40);font-family:var(--sans)}
+.matlbl{font-size:10px;font-weight:600;color:var(--ink70);text-transform:uppercase;letter-spacing:.5px}
+.matbg{height:3px;background:var(--bd);border-radius:2px;margin-top:7px}
+.matfill{height:3px;border-radius:2px;background:var(--blue);transition:width .7s ease}
+
+.miedebox{background:var(--ink);border-radius:var(--rs);padding:14px 16px;display:flex;gap:10px;margin-top:12px;align-items:flex-start}
+.miedelogo{width:32px;height:32px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;font-family:var(--serif)}
+.miedetxt{font-size:12px;color:rgba(255,255,255,.75);line-height:1.6}
+
+.resbanner{background:var(--ink);border-radius:var(--r);padding:20px;margin-bottom:12px}
+.reseye{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px}
+.respname{font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;font-family:var(--serif)}
+.resarea{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:12px}
+.reskpis{display:flex;flex-wrap:wrap;gap:7px}
+.rk{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:6px 10px}
+.rkv{font-size:18px;font-weight:600;color:#fff;line-height:1;font-family:var(--serif)}
+.rkl{font-size:9px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+.analyzing{text-align:center;padding:40px 20px;display:none}
+.analyzing.on{display:block}
+.aspin{width:40px;height:40px;border:2.5px solid var(--bd);border-top-color:var(--blue);border-radius:50%;animation:aspin .7s linear infinite;margin:0 auto 16px}
+@keyframes aspin{to{transform:rotate(360deg)}}
+.atitle{font-size:17px;font-weight:600;margin-bottom:6px;font-family:var(--serif)}
+.asub{font-size:13px;color:var(--ink70);margin-bottom:24px}
+.apipe{display:flex;flex-direction:column;gap:7px;max-width:340px;margin:0 auto}
+.api{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:var(--rs);background:var(--ink06);border:1px solid var(--bd);opacity:0;transform:translateY(5px);transition:all .3s}
+.api.on{opacity:1;transform:none}.api.dn{border-color:var(--green);background:var(--greens)}
+.apidot{width:7px;height:7px;border-radius:50%;background:var(--bd);flex-shrink:0;transition:background .3s}
+.api.on .apidot{background:var(--blue)}.api.dn .apidot{background:var(--green)}
+.apitxt{font-size:12px;font-weight:500;color:var(--ink70)}.api.dn .apitxt{color:var(--green)}
+.mbrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;justify-content:center}
+.mbdg{font-size:10px;font-weight:600;padding:3px 9px;border-radius:10px}
+.mb-b{background:var(--blues);color:var(--bluedark)}
+.mb-a{background:var(--ambers);color:var(--amberdark)}
+.mb-r{background:var(--reds);color:var(--reddark)}
+.mb-d{background:var(--ink12);color:var(--ink70)}
+
+@media(max-width:600px){.g2,.sgrid,.mgrid{grid-template-columns:1fr}.matgrid{grid-template-columns:1fr 1fr}.dig-sc{grid-template-columns:1fr 1fr}.cmphead{grid-template-columns:1fr}.main{padding:16px 14px 60px}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="nav-sq">Pz</div>
+    <div><div class="nav-name">ProzAI</div><div class="nav-sub">by Transformacion ExO</div></div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-pill">Sin API Key requerida</div>
+    <div class="nav-badge">MIEDE 2.0 · v5</div>
+  </div>
+</nav>
+
+<!-- LISTA -->
+<div id="s-list" class="screen active">
+  <div class="main">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:17px;font-weight:600;font-family:var(--serif)">Mis procesos</div>
+        <div style="font-size:12px;color:var(--ink70);margin-top:2px" id="list-sub">Cargando...</div>
+      </div>
+      <button class="btn btn-p" onclick="showForm()">+ Nuevo proceso</button>
+    </div>
+    <div id="proc-wrap"></div>
+  </div>
+</div>
+
+<!-- FORMULARIO -->
+<div id="s-form" class="screen">
+  <div class="stepper">
+    <div class="st-i"><div class="st-n on" id="fn1">1</div><span class="st-l on" id="fl1">Contexto</span></div>
+    <span class="st-sep">›</span>
+    <div class="st-i"><div class="st-n" id="fn2">2</div><span class="st-l" id="fl2">Participantes</span></div>
+    <span class="st-sep">›</span>
+    <div class="st-i"><div class="st-n" id="fn3">3</div><span class="st-l" id="fl3">Flujo AS-IS</span></div>
+    <span class="st-sep">›</span>
+    <div class="st-i"><div class="st-n" id="fn4">4</div><span class="st-l" id="fl4">Metricas</span></div>
+  </div>
+  <div class="main">
+
+    <!-- PASO 1 -->
+    <div id="fs1">
+      <div class="card">
+        <div class="card-head"><div class="card-icon">📋</div><div><div class="card-title">Contexto del proceso</div><div class="card-desc">Alcance, proposito y limites del proceso a documentar</div></div></div>
+        <div class="fld"><label>Nombre del proceso <span class="req">*</span></label><input id="f-nom" type="text" placeholder="Ej: Gestion de pedidos, Contratacion de personal, Cierre contable..."></div>
+        <div class="g2">
+          <div class="fld"><label>Area / Departamento <span class="req">*</span></label>
+            <select id="f-area"><option value="">Seleccionar...</option><option>Ventas y Comercial</option><option>Operaciones</option><option>Finanzas y Contabilidad</option><option>Recursos Humanos</option><option>Logistica y Cadena de Suministro</option><option>Produccion y Manufactura</option><option>Tecnologia y Sistemas</option><option>Marketing</option><option>Servicio al Cliente</option><option>Legal y Cumplimiento</option><option>Direccion General</option><option>Otro</option></select>
+          </div>
+          <div class="fld"><label>Sector / Industria <span class="req">*</span></label>
+            <select id="f-sec"><option value="">Seleccionar...</option><option>Agroindustria</option><option>Construccion e Inmobiliaria</option><option>Manufactura</option><option>Retail y Distribucion</option><option>Servicios Financieros</option><option>Salud</option><option>Tecnologia</option><option>Educacion</option><option>Logistica y Transporte</option><option>Consultoria y Servicios</option><option>Gobierno y Sector Publico</option><option>Otro</option></select>
+          </div>
+        </div>
+        <div class="fld"><label>Objetivo del proceso <span class="req">*</span></label><textarea id="f-obj" placeholder="Para que existe? Que valor entrega? Que resultado debe producir?"></textarea></div>
+        <div class="g2">
+          <div class="fld"><label>Que inicia el proceso?</label><input id="f-trig" type="text" placeholder="Solicitud del cliente, llegada de material..."></div>
+          <div class="fld"><label>Cuando termina?</label><input id="f-fin" type="text" placeholder="Pedido entregado, empleado contratado..."></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" onclick="showList()">Cancelar</button>
+          <button class="btn btn-p" onclick="fStep(2)">Continuar →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div id="fs2" style="display:none">
+      <div class="card">
+        <div class="card-head"><div class="card-icon">👥</div><div><div class="card-title">Roles y participantes</div><div class="card-desc">Agrega todos los actores del proceso — formaran los swim lanes del mapa BPMN</div></div></div>
+        <div class="fld">
+          <label>Roles involucrados <span class="req">*</span></label>
+          <div class="hint">Escribe el rol y presiona Enter o el boton + Agregar. Agrega todos los que necesites.</div>
+          <div class="roles-wrap">
+            <div class="roles-chips" id="roles-chips"></div>
+            <div class="roles-inp-row">
+              <input class="roles-inp" type="text" id="role-inp" placeholder="Ej: Vendedor, Gerente, Bodeguero, Cliente, Contador...">
+              <button class="roles-add" type="button" id="role-add-btn">+ Agregar</button>
+            </div>
+            <div class="roles-foot">Roles: <span class="rcnt" id="rcnt">0</span> &nbsp;&bull;&nbsp; Enter para agregar rapido</div>
+          </div>
+        </div>
+        <div class="g2" style="margin-top:4px">
+          <div class="fld"><label>Responsable / dueno del proceso</label><input id="f-due" type="text" placeholder="Cargo o persona responsable"></div>
+          <div class="fld"><label>Cliente del proceso</label><input id="f-cli" type="text" placeholder="Quien recibe el resultado final"></div>
+          <div class="fld"><label>Sistemas y herramientas actuales</label><textarea id="f-sis" style="min-height:60px" placeholder="SAP, Salesforce, Excel, WhatsApp, correo, formularios en papel..."></textarea></div>
+          <div class="fld"><label>Documentos / entregables del proceso</label><textarea id="f-doc" style="min-height:60px" placeholder="Orden de compra, factura, guia de entrega, contrato, informe..."></textarea></div>
+        </div>
+        <div class="btn-row"><button class="btn" onclick="fStep(1)">← Atras</button><button class="btn btn-p" onclick="fStep(3)">Continuar →</button></div>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div id="fs3" style="display:none">
+      <div class="card">
+        <div class="card-head"><div class="card-icon">🔀</div><div><div class="card-title">Flujo actual del proceso (AS-IS)</div><div class="card-desc">Describe como ocurre el proceso HOY — con sus fallas, esperas y todo. Numera cada paso.</div></div></div>
+        <div class="fld">
+          <label>Pasos del proceso <span class="req">*</span></label>
+          <div class="hint">Numera cada paso. Incluye demoras, aprobaciones, rechazos, trabajo manual. Mas detalle = mejor analisis.</div>
+          <textarea id="f-pasos" style="min-height:210px" placeholder="1. El cliente solicita el pedido por WhatsApp o telefono
+2. El vendedor toma nota en papel o en el chat
+3. Consulta el inventario en un Excel que esta desactualizado
+4. Si hay stock: hace cotizacion en Word y la envia por correo
+5. Si no hay stock: llama al jefe de bodega (a veces no contesta)
+6. El cliente demora entre 1 y 5 dias en responder
+7. Cuando aprueba, el vendedor avisa verbalmente al bodeguero
+8. El bodeguero prepara el pedido (con errores frecuentes)
+9. Un asistente genera la factura manualmente (muchos errores)
+10. Se coordina la entrega de forma informal con el transportista
+11. El cliente firma la guia en papel que luego se pierde"></textarea>
+        </div>
+        <div class="fld">
+          <label>Problemas, fricciones y quejas conocidas</label>
+          <textarea id="f-prob" style="min-height:70px" placeholder="Proceso lento, errores en facturas, nadie sabe el estado, dependemos de una persona, Excel desactualizado..."></textarea>
+        </div>
+        <div class="fld"><label>Entradas y salidas del proceso</label><input id="f-io" type="text" placeholder="Entrada: solicitud del cliente | Salida: pedido entregado, factura generada"></div>
+        <div class="btn-row"><button class="btn" onclick="fStep(2)">← Atras</button><button class="btn btn-p" onclick="fStep(4)">Continuar →</button></div>
+      </div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div id="fs4" style="display:none">
+      <div class="card">
+        <div class="card-head"><div class="card-icon">📊</div><div><div class="card-title">Diagnostico cuantitativo</div><div class="card-desc">Estos datos permiten calcular el impacto real y comparar antes vs despues con cifras concretas</div></div></div>
+        <div class="mgrid">
+          <div class="mc"><div class="mch"><div class="mci" style="background:var(--ambers)">⏱</div><div><div class="mcl">Duracion total del proceso</div><div class="mcw">Tiempo de inicio a fin</div></div></div><input id="m-t" type="text" placeholder="Ej: 3 dias, 4 horas, 2 semanas"></div>
+          <div class="mc"><div class="mch"><div class="mci" style="background:var(--greens)">🔄</div><div><div class="mcl">Volumen y frecuencia</div><div class="mcw">Cuantas veces ocurre por periodo</div></div></div><input id="m-v" type="text" placeholder="Ej: 50 pedidos/mes, 200 facturas/semana"></div>
+          <div class="mc"><div class="mch"><div class="mci" style="background:var(--reds)">❌</div><div><div class="mcl">Errores y reprocesos</div><div class="mcw">Porcentaje que requiere correccion</div></div></div><input id="m-e" type="text" placeholder="Ej: 20% requiere correccion"></div>
+          <div class="mc"><div class="mch"><div class="mci" style="background:var(--blues)">👥</div><div><div class="mcl">Personas y horas</div><div class="mcw">Cuantas personas y cuanto tiempo</div></div></div><input id="m-p" type="text" placeholder="Ej: 3 personas, 8 hrs/semana"></div>
+          <div class="mc"><div class="mch"><div class="mci" style="background:var(--ambers)">💲</div><div><div class="mcl">Costo estimado del proceso</div><div class="mcw">Costo mensual — para calcular ROI</div></div></div><input id="m-c" type="text" placeholder="Ej: $3,000/mes en mano de obra"></div>
+          <div class="mc"><div class="mch"><div class="mci" style="background:var(--greens)">😊</div><div><div class="mcl">Satisfaccion del cliente</div><div class="mcw">NPS, quejas, reclamos actuales</div></div></div><input id="m-n" type="text" placeholder="Ej: 5/10, muchas quejas por demora"></div>
+        </div>
+        <div class="fld" style="margin-top:14px">
+          <label>Nivel actual de digitalizacion</label>
+          <div class="hint" style="margin-bottom:7px">Selecciona el nivel que mejor describe como se ejecuta hoy</div>
+          <div class="dig-sc" id="dig-sc">
+            <div class="dopt" data-v="1" onclick="setDig(this,1)"><span class="dnum">1</span><span class="dlbl">100% manual y papel</span></div>
+            <div class="dopt" data-v="2" onclick="setDig(this,2)"><span class="dnum">2</span><span class="dlbl">Excel y email sin integrar</span></div>
+            <div class="dopt" data-v="3" onclick="setDig(this,3)"><span class="dnum">3</span><span class="dlbl">Sistema basico con paralelos manuales</span></div>
+            <div class="dopt" data-v="4" onclick="setDig(this,4)"><span class="dnum">4</span><span class="dlbl">Mayormente digital con excepciones</span></div>
+            <div class="dopt" data-v="5" onclick="setDig(this,5)"><span class="dnum">5</span><span class="dlbl">Completamente digital e integrado</span></div>
+          </div>
+        </div>
+        <div class="fld" style="margin-top:10px"><label>Contexto adicional (opcional)</label><textarea id="m-ctx" style="min-height:50px" placeholder="Restricciones, intentos previos fallidos, presupuesto, prioridades estrategicas..."></textarea></div>
+        <div class="btn-row"><button class="btn" onclick="fStep(3)">← Atras</button><button class="btn btn-s" onclick="saveAndView()">Ver diagrama del proceso →</button></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DIAGRAMA -->
+<div id="s-diag" class="screen">
+  <div class="main">
+    <div id="diag-bn" class="diag-bn"></div>
+    <div class="card">
+      <div class="sh"><div class="sb" style="background:var(--blue)"></div><div class="stitle">Flujo del proceso AS-IS</div><div class="scnt" id="diag-cnt"></div></div>
+      <div id="diag-flow" class="flow"></div>
+    </div>
+    <div class="card" id="roles-card" style="display:none">
+      <div class="sh"><div class="sb" style="background:var(--purple)"></div><div class="stitle">Roles del proceso — Swim lanes</div></div>
+      <div id="roles-display" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+    <div class="card analyzing" id="analyzing">
+      <div class="aspin"></div>
+      <div class="atitle">Analizando el proceso...</div>
+      <div class="asub">Motor de analisis BPMN + Lean + DMAIC + MIEDE 2.0</div>
+      <div class="apipe">
+        <div class="api" id="ap1"><div class="apidot"></div><div class="apitxt">Estructurando proceso AS-IS con notacion BPMN...</div></div>
+        <div class="api" id="ap2"><div class="apidot"></div><div class="apitxt">Detectando los 8 desperdicios Lean...</div></div>
+        <div class="api" id="ap3"><div class="apidot"></div><div class="apitxt">Aplicando DMAIC — analisis de causa raiz...</div></div>
+        <div class="api" id="ap4"><div class="apidot"></div><div class="apitxt">Disenando proceso optimizado TO-BE...</div></div>
+        <div class="api" id="ap5"><div class="apidot"></div><div class="apitxt">Calculando KPIs y hoja de ruta MIEDE 2.0...</div></div>
+      </div>
+      <div class="mbrow"><span class="mbdg mb-b">BPMN 2.0</span><span class="mbdg mb-a">Lean 8 Wastes</span><span class="mbdg mb-r">DMAIC</span><span class="mbdg mb-d">MIEDE 2.0</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;gap:8px;margin-top:4px">
+      <button class="btn" onclick="showList()">← Mis procesos</button>
+      <button class="btn btn-p" id="btn-analyze" onclick="runAnalysis()">Generar analisis completo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALISIS -->
+<div id="s-analysis" class="screen">
+  <div class="main" id="analysis-body"></div>
+</div>
+
+<script>
+/* ========================================================
+   ESTADO
+   ======================================================== */
+var APP = { roles: [], dig: 0, cur: null, procs: [] };
+
+/* ========================================================
+   INICIO
+   ======================================================== */
+window.addEventListener('load', function() {
+  setupRoles();
+  loadData();
+});
+
+function loadData() {
+  try { var r = localStorage.getItem('prozai5'); APP.procs = r ? JSON.parse(r) : []; }
+  catch(e) { APP.procs = []; }
+  renderList();
+}
+function saveData() {
+  try { localStorage.setItem('prozai5', JSON.stringify(APP.procs)); } catch(e) {}
+}
+
+/* ========================================================
+   NAVEGACION
+   ======================================================== */
+function showScreen(id) {
+  ['s-list','s-form','s-diag','s-analysis'].forEach(function(s) {
+    var el = document.getElementById(s);
+    if (el) el.className = 'screen' + (s === 's-' + id ? ' active' : '');
+  });
+  window.scrollTo(0, 0);
+}
+function showList() { renderList(); showScreen('list'); }
+function showForm() { resetForm(); showScreen('form'); fStep(1); }
+
+/* ========================================================
+   LISTA
+   ======================================================== */
+function renderList() {
+  var wrap = document.getElementById('proc-wrap'), sub = document.getElementById('list-sub');
+  if (!wrap) return;
+  var n = APP.procs.length;
+  sub.textContent = n + ' proceso' + (n !== 1 ? 's' : '') + ' guardado' + (n !== 1 ? 's' : '');
+  if (n === 0) {
+    wrap.innerHTML = '<div class="empty-st"><span class="e-ico">📊</span>'
+      + '<div style="font-size:15px;font-weight:600;font-family:var(--serif);margin-bottom:6px">Sin procesos aun</div>'
+      + '<div style="font-size:13px;color:var(--ink70);margin-bottom:20px">Crea tu primer proceso para comenzar el levantamiento inteligente</div>'
+      + '<button class="btn btn-p" onclick="showForm()">+ Crear primer proceso</button></div>';
+    return;
+  }
+  var html = '<div class="proc-list">';
+  APP.procs.forEach(function(p, i) {
+    html += '<div class="pcard"><div class="pcard-ico">📋</div>'
+      + '<div class="pcard-info"><div class="pcard-name">' + esc(p.nombre) + '</div>'
+      + '<div class="pcard-meta">' + esc(p.area) + ' &bull; ' + esc(p.sector) + ' &bull; ' + esc(p.fecha || '') + '</div></div>'
+      + '<div class="pcard-acts">'
+      + '<button class="btn" style="font-size:11px;padding:5px 10px" onclick="viewDiag(' + i + ')">Diagrama</button>'
+      + (p.analysis ? '<button class="btn" style="font-size:11px;padding:5px 10px" onclick="viewAnalysis(' + i + ')">Analisis</button>' : '')
+      + '<button class="btn btn-d" style="font-size:11px;padding:5px 10px" onclick="delProc(' + i + ')">Eliminar</button>'
+      + '</div></div>';
+  });
+  wrap.innerHTML = html + '</div>';
+}
+
+function delProc(i) {
+  if (!confirm('Eliminar este proceso?')) return;
+  APP.procs.splice(i, 1); saveData(); renderList();
+}
+function viewDiag(i) { APP.cur = APP.procs[i]; renderDiag(APP.cur); showScreen('diag'); }
+function viewAnalysis(i) {
+  APP.cur = APP.procs[i];
+  if (APP.cur.analysis) { renderResults(APP.cur.analysis); showScreen('analysis'); }
+  else viewDiag(i);
+}
+
+/* ========================================================
+   FORMULARIO
+   ======================================================== */
+function resetForm() {
+  ['f-nom','f-area','f-sec','f-obj','f-trig','f-fin','f-due','f-cli','f-sis','f-doc',
+   'f-pasos','f-prob','f-io','m-t','m-v','m-e','m-p','m-c','m-n','m-ctx'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  APP.roles = []; APP.dig = 0; renderChips();
+  document.querySelectorAll('.dopt').forEach(function(e) { e.classList.remove('sel'); });
+}
+
+function fStep(n) {
+  [1,2,3,4].forEach(function(i) {
+    var el = document.getElementById('fs' + i); if (el) el.style.display = (i === n ? 'block' : 'none');
+  });
+  [1,2,3,4].forEach(function(i) {
+    var ne = document.getElementById('fn' + i), le = document.getElementById('fl' + i); if (!ne) return;
+    if (i < n) { ne.className = 'st-n ok'; ne.textContent = '\u2713'; le.className = 'st-l ok'; }
+    else if (i === n) { ne.className = 'st-n on'; ne.textContent = i; le.className = 'st-l on'; }
+    else { ne.className = 'st-n'; ne.textContent = i; le.className = 'st-l'; }
+  });
+}
+
+function setDig(el, v) {
+  APP.dig = v;
+  document.querySelectorAll('.dopt').forEach(function(o) { o.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+function gv(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+function saveAndView() {
+  var nom = gv('f-nom'), obj = gv('f-obj'), pasos = gv('f-pasos');
+  if (!nom || !obj || !pasos) { alert('Por favor completa: Nombre del proceso, Objetivo y la descripcion del Flujo.'); return; }
+  var now = new Date();
+  var proc = {
+    id: Date.now(), nombre: nom, area: gv('f-area'), sector: gv('f-sec'),
+    objetivo: obj, trigger: gv('f-trig'), fin: gv('f-fin'),
+    roles: APP.roles.slice(), dueno: gv('f-due'), cliente: gv('f-cli'),
+    sistemas: gv('f-sis'), docs: gv('f-doc'),
+    pasos: pasos, problemas: gv('f-prob'), io: gv('f-io'),
+    metTiempo: gv('m-t'), metVolumen: gv('m-v'), metErrores: gv('m-e'),
+    metPersonas: gv('m-p'), metCosto: gv('m-c'), metNps: gv('m-n'),
+    dig: APP.dig, contexto: gv('m-ctx'), analysis: null,
+    fecha: now.toLocaleDateString('es-EC')
+  };
+  APP.procs.unshift(proc); APP.cur = proc; saveData();
+  renderDiag(proc); showScreen('diag');
+}
+
+/* ========================================================
+   ROLES
+   ======================================================== */
+function setupRoles() {
+  var inp = document.getElementById('role-inp'), btn = document.getElementById('role-add-btn');
+  if (!inp || !btn) return;
+  btn.addEventListener('click', function(e) { e.preventDefault(); doAddRole(inp); });
+  inp.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); doAddRole(inp); }
+  });
+}
+function doAddRole(inp) {
+  var raw = inp.value.trim(); if (!raw) return;
+  raw.split(',').forEach(function(p) { var v = p.trim(); if (v && APP.roles.indexOf(v) === -1) APP.roles.push(v); });
+  inp.value = ''; renderChips(); inp.focus();
+}
+function removeRole(i) { APP.roles.splice(i, 1); renderChips(); }
+function renderChips() {
+  var area = document.getElementById('roles-chips'), cnt = document.getElementById('rcnt');
+  if (!area) return;
+  area.innerHTML = '';
+  if (APP.roles.length === 0) {
+    area.innerHTML = '<span style="font-size:12px;color:var(--ink40);font-style:italic">Sin roles aun...</span>';
+    if (cnt) cnt.textContent = '0'; return;
+  }
+  APP.roles.forEach(function(r, i) {
+    var d = document.createElement('div'); d.className = 'rchip';
+    var s = document.createElement('span'); s.textContent = r;
+    var x = document.createElement('button'); x.className = 'rchip-x'; x.type = 'button'; x.textContent = 'x';
+    x.setAttribute('data-i', i);
+    x.onclick = function() { removeRole(parseInt(this.getAttribute('data-i'), 10)); };
+    d.appendChild(s); d.appendChild(x); area.appendChild(d);
+  });
+  if (cnt) cnt.textContent = APP.roles.length;
+}
+
+/* ========================================================
+   DIAGRAMA AS-IS (render visual del flujo ingresado)
+   ======================================================== */
+function parseSteps(text) {
+  var steps = [], lines = text.split('\n');
+  lines.forEach(function(l) {
+    var m = l.trim().match(/^(\d+)[.\):\-\s]\s*(.+)/);
+    if (m) steps.push({ n: parseInt(m[1], 10), text: m[2].trim() });
+    else if (l.trim() && steps.length > 0 && !l.trim().match(/^\d/))
+      steps[steps.length - 1].text += ' ' + l.trim();
+  });
+  if (steps.length < 2) {
+    steps = [];
+    lines.filter(function(l) { return l.trim().length > 3; }).forEach(function(l, i) { steps.push({ n: i + 1, text: l.trim() }); });
+  }
+  return steps;
+}
+
+function classifyStep(text, n, total) {
+  var t = text.toLowerCase();
+  if (n === 1) return 'start';
+  if (n === total) return 'end';
+  if (t.match(/\bsi\b|aprueba|decide|verifica|revisa|evalua|confirma|autoriza|rechaza|\?/)) return 'decision';
+  if (t.match(/espera|demora|dias|horas|semanas|pendiente|cola|turno/)) return 'wait';
+  if (t.match(/error|falla|problema|incorrecto|rehacer|reproceso|corrige/)) return 'bad';
+  return 'normal';
+}
+
+function renderDiag(proc) {
+  var bn = document.getElementById('diag-bn');
+  bn.innerHTML = '<div class="diag-nm">' + esc(proc.nombre) + '</div>'
+    + '<div class="diag-mt">' + esc(proc.area) + ' &bull; ' + esc(proc.sector) + '</div>'
+    + '<div class="diag-tgs">'
+    + (proc.roles.length > 0 ? proc.roles.slice(0, 6).map(function(r) { return '<span class="dtag">' + esc(r) + '</span>'; }).join('') : '')
+    + (proc.dueno ? '<span class="dtag">Dueno: ' + esc(proc.dueno) + '</span>' : '')
+    + '</div>';
+
+  var flowEl = document.getElementById('diag-flow'); flowEl.innerHTML = '';
+  var steps = parseSteps(proc.pasos);
+  var cnt = document.getElementById('diag-cnt'); if (cnt) cnt.textContent = steps.length + ' pasos identificados';
+
+  var colors = { start: '#2563eb', normal: '#6366f1', decision: '#d97706', end: '#16a34a', wait: '#f59e0b', bad: '#dc2626' };
+  var bclass = { start: 'fb-st', normal: 'fb-n', decision: 'fb-dec', end: 'fb-end', wait: 'fb-wait', bad: 'fb-bad' };
+
+  steps.forEach(function(s, i) {
+    var last = (i === steps.length - 1);
+    var type = classifyStep(s.text, i + 1, steps.length);
+    var color = colors[type] || '#6366f1';
+    var bc = bclass[type] || 'fb-n';
+    var row = document.createElement('div'); row.className = 'frow';
+    var lcol = document.createElement('div'); lcol.className = 'flcol';
+    var circ = document.createElement('div'); circ.className = 'fcirc'; circ.style.background = color; circ.textContent = s.n;
+    lcol.appendChild(circ);
+    if (!last) { var ln = document.createElement('div'); ln.className = 'fline'; lcol.appendChild(ln); }
+    var body = document.createElement('div'); body.className = 'fbody ' + bc;
+    var title = document.createElement('div'); title.className = 'ftitle';
+    title.textContent = s.text.length > 90 ? s.text.substring(0, 90) + '...' : s.text; body.appendChild(title);
+    if (type === 'decision' || type === 'wait' || type === 'bad') {
+      var tags = document.createElement('div'); tags.className = 'ftags';
+      var t = document.createElement('span');
+      t.className = 'ftag ' + (type === 'bad' ? 'ft-re' : 'ft-am');
+      t.textContent = type === 'decision' ? 'Punto de decision' : type === 'wait' ? 'Espera / demora' : 'Error / reproceso';
+      tags.appendChild(t); body.appendChild(tags);
+    }
+    row.appendChild(lcol); row.appendChild(body); flowEl.appendChild(row);
+  });
+
+  var rc = document.getElementById('roles-card'), rd = document.getElementById('roles-display');
+  if (proc.roles && proc.roles.length > 0) {
+    rc.style.display = 'block';
+    rd.innerHTML = proc.roles.map(function(r) {
+      return '<span style="background:var(--purples);color:#6d28d9;border:1px solid #c4b5fd;font-size:12px;font-weight:600;padding:4px 12px;border-radius:14px">' + esc(r) + '</span>';
+    }).join('');
+  } else { rc.style.display = 'none'; }
+
+  document.getElementById('analyzing').classList.remove('on');
+  var ba = document.getElementById('btn-analyze');
+  if (ba) { ba.style.display = 'inline-flex'; ba.textContent = proc.analysis ? 'Ver analisis guardado' : 'Generar analisis completo'; }
+}
+
+/* ========================================================
+   MOTOR DE ANALISIS LOCAL (sin API Key)
+   ======================================================== */
+function runAnalysis() {
+  var p = APP.cur; if (!p) return;
+  if (p.analysis) { renderResults(p.analysis); showScreen('analysis'); return; }
+
+  var anaEl = document.getElementById('analyzing');
+  var ba = document.getElementById('btn-analyze');
+  anaEl.classList.add('on'); if (ba) ba.style.display = 'none';
+
+  var pips = ['ap1','ap2','ap3','ap4','ap5'];
+  pips.forEach(function(id, i) {
+    setTimeout(function() { var el = document.getElementById(id); if (el) el.classList.add('on'); }, 400 * (i + 1));
+    setTimeout(function() { var el = document.getElementById(id); if (el) el.classList.add('dn'); }, 400 * (i + 1) + 800);
+  });
+
+  setTimeout(function() {
+    try {
+      var analysis = analyzeProcess(p);
+      anaEl.classList.remove('on');
+      var idx = APP.procs.findIndex(function(pr) { return pr.id === p.id; });
+      if (idx >= 0) { APP.procs[idx].analysis = analysis; APP.cur = APP.procs[idx]; }
+      saveData();
+      renderResults(analysis);
+      showScreen('analysis');
+    } catch(err) {
+      anaEl.classList.remove('on');
+      if (ba) { ba.style.display = 'inline-flex'; ba.textContent = 'Reintentar analisis'; }
+      alert('Error al generar el analisis: ' + err.message);
+    }
+  }, 400 * 5 + 1200);
+}
+
+/* ========================================================
+   MOTOR REGLAS — ANALISIS INTELIGENTE SIN API
+   ======================================================== */
+function analyzeProcess(p) {
+  var txt = (p.pasos + ' ' + p.problemas + ' ' + p.sistemas + ' ' + p.objetivo).toLowerCase();
+  var steps = parseSteps(p.pasos);
+  var dig = p.dig || 1;
+  var area = p.area || '';
+  var sector = p.sector || '';
+
+  /* ---- DETECCION DE DESPERDICIOS LEAN ---- */
+  var wasteRules = [
+    { w: 'Sobreproduccion', ico: '📦', kw: ['genera mas','produce mas','imprime','copia','reportes que nadie','informes adicionales','exceso','sobrante','mas de lo necesario','anticipa','previo a la solicitud'] },
+    { w: 'Espera', ico: '⏳', kw: ['espera','demora','dias','semanas','pendiente','cola','no contesta','tarda','retraso','lento','bloqueo','aprobacion','decision pendiente','sin respuesta'] },
+    { w: 'Transporte', ico: '🚚', kw: ['traslado','transporte','envio','mueve','entrega','lleva','recoge','correo','mensajero','varios sistemas','pasa de un','de un area a otra'] },
+    { w: 'Sobreprocesamiento', ico: '🔧', kw: ['duplica','doble verificacion','re-verifica','vuelve a revisar','aprueba dos veces','varios formatos','convierte','exporta','re-ingresa','copia manualmente','mismo dato en dos','paso innecesario'] },
+    { w: 'Inventario', ico: '🏭', kw: ['acumula','stock','inventario','pendientes sin procesar','bandeja de entrada','en cola','sin atender','en espera de revision','archivos sin procesar','papeles acumulados'] },
+    { w: 'Movimiento', ico: '🚶', kw: ['busca','localiza','pregunta a','consulta a','llama a','va a la bodega','busca el archivo','revisa el email','busca el documento','navega entre sistemas','abre y cierra'] },
+    { w: 'Defectos', ico: '❌', kw: ['error','falla','equivocacion','incorrecto','reproceso','corrige','rehace','devuelto','rechazado','no coincide','discrepancia','devolucion','queja','reclamo','revision','ajusta'] },
+    { w: 'Talento', ico: '🧠', kw: ['solo una persona sabe','depende de','conocimiento de una persona','una sola persona','sin documentar','no hay manual','no esta documentado','informal','de memoria','criterio personal','sin proceso definido','cada uno hace'] }
+  ];
+
+  var leanWastes = wasteRules.map(function(rule) {
+    var found = rule.kw.some(function(kw) { return txt.indexOf(kw) !== -1; });
+    var desc = found ? generateWasteDesc(rule.w, p) : 'No se detectaron indicadores de este desperdicio en el proceso descrito.';
+    return { w: rule.w, ico: rule.ico, found: found, desc: desc };
+  });
+  var foundCount = leanWastes.filter(function(w) { return w.found; }).length;
+  if (foundCount < 2) {
+    leanWastes[6].found = true; leanWastes[6].desc = generateWasteDesc('Defectos', p);
+    leanWastes[1].found = true; leanWastes[1].desc = generateWasteDesc('Espera', p);
+  }
+
+  /* ---- ANALISIS DE PASOS (AS-IS estructurado) ---- */
+  var asIsSteps = steps.map(function(s, i) {
+    var type = classifyStep(s.text, i + 1, steps.length);
+    var isBN = type === 'bad' || (type === 'wait' && i > 0) || (s.text.toLowerCase().match(/error|falla|manual|informal|papel|desactualizado|no hay|sin sistema/));
+    var problem = isBN ? identifyProblem(s.text) : '';
+    var rol = guessRole(s.text, p.roles);
+    return {
+      n: i + 1,
+      nom: buildStepName(s.text),
+      desc: s.text.length > 120 ? s.text.substring(0, 120) + '...' : s.text,
+      tipo: type === 'start' ? 'inicio' : type === 'end' ? 'fin' : type === 'decision' ? 'decision' : type === 'wait' ? 'espera' : 'actividad',
+      rol: rol,
+      tiempo: guessTime(s.text),
+      es_cuello: isBN,
+      problema: problem
+    };
+  });
+
+  /* ---- PROCESO TO-BE (optimizado) ---- */
+  var toBeSteps = generateToBe(asIsSteps, p, dig);
+
+  /* ---- DMAIC ---- */
+  var dmaic = generateDMAIC(p, leanWastes, foundCount);
+
+  /* ---- KPIs ---- */
+  var kpis = generateKPIs(p, dig, foundCount);
+
+  /* ---- ROADMAP ---- */
+  var roadmap = generateRoadmap(p, dig, leanWastes, sector, area);
+
+  /* ---- MADUREZ MIEDE 2.0 ---- */
+  var maturity = generateMaturity(p, dig);
+
+  /* ---- RESUMEN ---- */
+  var redT = Math.min(70, Math.max(25, foundCount * 8 + (5 - dig) * 6)) + '%';
+  var redC = Math.min(55, Math.max(15, foundCount * 6 + (5 - dig) * 4)) + '%';
+
+  return {
+    resumen: { pasos_asis: asIsSteps.length, pasos_tobe: toBeSteps.length, desperdicios: foundCount, red_tiempo: redT, red_costo: redC, madurez: maturity.score },
+    asis: asIsSteps,
+    tobe: toBeSteps,
+    lean: leanWastes,
+    dmaic: dmaic,
+    kpis: kpis,
+    roadmap: roadmap,
+    madurez: maturity
+  };
+}
+
+/* ---- HELPERS DEL MOTOR ---- */
+function buildStepName(text) {
+  var t = text.trim();
+  var verbs = ['solicita','recibe','revisa','verifica','genera','procesa','aprueba','rechaza','envia','notifica','actualiza','crea','completa','coordina','prepara','confirma','registra','entrega'];
+  var lower = t.toLowerCase();
+  for (var i = 0; i < verbs.length; i++) {
+    if (lower.indexOf(verbs[i]) !== -1) {
+      return capitalize(verbs[i]) + ' ' + extractObject(t);
+    }
+  }
+  return t.length > 40 ? t.substring(0, 40) + '...' : t;
+}
+
+function extractObject(text) {
+  var words = text.split(' ');
+  var result = [];
+  var capturing = false;
+  for (var i = 0; i < Math.min(words.length, 8); i++) {
+    if (i > 0) { result.push(words[i]); if (result.length >= 4) break; }
+  }
+  var r = result.join(' ').replace(/[,;]/g, '').trim();
+  return r.length > 30 ? r.substring(0, 30) + '...' : r;
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function guessRole(text, roles) {
+  if (!roles || roles.length === 0) return '';
+  var lower = text.toLowerCase();
+  for (var i = 0; i < roles.length; i++) {
+    if (lower.indexOf(roles[i].toLowerCase()) !== -1) return roles[i];
+  }
+  if (lower.match(/cliente|comprador/)) return roles.find(function(r) { return r.toLowerCase().match(/cliente|comprador/); }) || '';
+  if (lower.match(/gerente|jefe|director/)) return roles.find(function(r) { return r.toLowerCase().match(/gerente|jefe|director/); }) || '';
+  if (lower.match(/bodega|almacen/)) return roles.find(function(r) { return r.toLowerCase().match(/bodega|almacen/); }) || '';
+  return '';
+}
+
+function guessTime(text) {
+  var m = text.match(/(\d+)\s*(dia|hora|minuto|semana)/i);
+  if (m) return m[1] + ' ' + m[2] + (parseInt(m[1]) > 1 ? 's' : '');
+  var t = text.toLowerCase();
+  if (t.match(/inmediato|instant/)) return '< 5 min';
+  if (t.match(/rapido|breve/)) return '15-30 min';
+  if (t.match(/espera|lento|demora/)) return '1-3 dias';
+  return '';
+}
+
+function identifyProblem(text) {
+  var t = text.toLowerCase();
+  if (t.match(/error|equivocacion|incorrecto/)) return 'Genera errores y reprocesos';
+  if (t.match(/espera|demora|tarda|dias/)) return 'Cuello de botella por tiempo de espera';
+  if (t.match(/manual|papel|verbal/)) return 'Proceso manual propenso a errores';
+  if (t.match(/desactualizado|desactualiz/)) return 'Informacion no confiable en tiempo real';
+  if (t.match(/informal|sin proceso/)) return 'Proceso sin estandar definido';
+  if (t.match(/una sola persona|depende de/)) return 'Dependencia de persona critica — riesgo operacional';
+  return 'Actividad con oportunidad de mejora';
+}
+
+function generateWasteDesc(wasteType, p) {
+  var descs = {
+    'Sobreproduccion': 'Se generan documentos, reportes o registros que no son solicitados o que nadie utiliza, consumiendo tiempo y recursos innecesarios.',
+    'Espera': 'El proceso registra tiempos de espera significativos: aprobaciones pendientes, respuestas de clientes, disponibilidad de informacion o personas clave.',
+    'Transporte': 'La informacion o los documentos viajan entre multiples sistemas, areas o personas de forma ineficiente, aumentando el tiempo de ciclo.',
+    'Sobreprocesamiento': 'Se realizan pasos, verificaciones o aprobaciones redundantes que no agregan valor al resultado final del proceso.',
+    'Inventario': 'Existe acumulacion de trabajo pendiente: solicitudes sin procesar, documentos en cola o informacion sin actualizar.',
+    'Movimiento': 'El personal debe buscar, consultar o localizar informacion activamente en multiples fuentes, sistemas o personas.',
+    'Defectos': 'Se detectan errores, inconsistencias y reprocesos que obligan a corregir, rehacer o volver a pasos anteriores del proceso.',
+    'Talento': 'El conocimiento del proceso esta concentrado en pocas personas y no esta documentado, creando dependencias y riesgos de continuidad.'
+  };
+  return descs[wasteType] || 'Desperdicio detectado en el proceso.';
+}
+
+function generateToBe(asIs, p, dig) {
+  var result = [];
+  var stepNum = 1;
+  var eliminados = 0;
+
+  asIs.forEach(function(s, i) {
+    if (s.tipo === 'espera' && i > 0 && i < asIs.length - 1 && asIs.length > 5) {
+      eliminados++;
+      return;
+    }
+    var newStep = {
+      n: stepNum++,
+      nom: s.nom,
+      desc: s.desc,
+      tipo: s.tipo,
+      rol: s.rol,
+      tiempo: s.tiempo ? optimizeTime(s.tiempo, dig) : '',
+      es_nuevo: false,
+      mejora: ''
+    };
+    if (s.es_cuello) {
+      newStep = improveStep(newStep, s, dig);
+    }
+    result.push(newStep);
+  });
+
+  if (dig <= 2) {
+    result.splice(Math.min(2, result.length), 0, {
+      n: 0, nom: 'Registro en sistema centralizado',
+      desc: 'Se implementa un sistema de gestion que registra automaticamente la solicitud y la distribuye a los participantes en tiempo real.',
+      tipo: 'automatico', rol: 'Sistema', tiempo: '< 2 min', es_nuevo: true, mejora: 'Elimina el registro manual y la comunicacion informal'
+    });
+  }
+
+  if (p.roles.length > 2) {
+    result.push({
+      n: 0, nom: 'Notificacion automatica y cierre',
+      desc: 'El sistema notifica automaticamente a todos los participantes el cierre del proceso y genera los registros de trazabilidad.',
+      tipo: 'automatico', rol: 'Sistema', tiempo: '< 1 min', es_nuevo: true, mejora: 'Visibilidad total del estado para todos los actores'
+    });
+  }
+
+  result.forEach(function(s, i) { s.n = i + 1; });
+  return result;
+}
+
+function improveStep(newStep, original, dig) {
+  var t = original.desc.toLowerCase();
+  if (t.match(/excel|papel|manual/)) {
+    newStep.desc = newStep.desc + ' (Migrado a sistema digital con validacion automatica)';
+    newStep.mejora = 'Elimina proceso manual — sistema valida automaticamente';
+    newStep.tiempo = '< 5 min';
+  } else if (t.match(/verbal|whatsapp|correo/)) {
+    newStep.desc = newStep.desc + ' (Comunicacion estandarizada via plataforma centralizada)';
+    newStep.mejora = 'Comunicacion con trazabilidad y notificacion automatica';
+  } else if (t.match(/error|falla/)) {
+    newStep.desc = newStep.desc + ' (Con validacion previa automatica para prevenir errores)';
+    newStep.mejora = 'Reduce errores en un 80% con validaciones automaticas';
+  } else {
+    newStep.mejora = 'Proceso estandarizado con tiempos definidos y responsables claros';
+  }
+  return newStep;
+}
+
+function optimizeTime(time, dig) {
+  if (!time) return '';
+  var m = time.match(/(\d+)/);
+  if (!m) return time;
+  var n = parseInt(m[1]);
+  var factor = dig <= 2 ? 0.4 : dig === 3 ? 0.6 : 0.75;
+  var newN = Math.max(1, Math.round(n * factor));
+  return time.replace(m[1], newN + ' (reducido)');
+}
+
+function generateDMAIC(p, wastes, foundCount) {
+  var problems = p.problemas || 'ineficiencias en el flujo del proceso';
+  var foundWastes = wastes.filter(function(w) { return w.found; }).map(function(w) { return w.w; });
+
+  return {
+    define: 'El proceso "' + p.nombre + '" en el area de ' + (p.area || 'operaciones') + ' presenta deficiencias operativas que impactan directamente en el tiempo de entrega y la satisfaccion del cliente. Se identificaron ' + foundCount + ' de los 8 desperdicios Lean: ' + (foundWastes.slice(0,3).join(', ')) + (foundWastes.length > 3 ? ' y otros.' : '.') + ' Los problemas clave reportados incluyen: ' + (problems.substring(0, 200)) + '.',
+
+    measure: 'Metricas actuales del proceso: Tiempo de ciclo: ' + (p.metTiempo || 'no especificado') + '. Volumen/frecuencia: ' + (p.metVolumen || 'no especificado') + '. Tasa de errores: ' + (p.metErrores || 'no cuantificada') + '. Personas involucradas: ' + (p.metPersonas || 'no especificado') + '. Costo estimado: ' + (p.metCosto || 'no cuantificado') + '. Satisfaccion del cliente: ' + (p.metNps || 'no medida') + '. Nivel de digitalizacion actual: ' + (p.dig || 1) + '/5.',
+
+    analyze: 'Causas raiz identificadas mediante analisis del flujo: (1) Ausencia de sistemas integrados — el proceso depende de herramientas no conectadas (' + (p.sistemas || 'Excel, email, papel') + ') que generan duplicacion de esfuerzos y datos desactualizados. (2) Comunicacion informal — los traspasos entre roles se realizan verbalmente o por canales no estructurados, creando dependencias y perdida de trazabilidad. (3) Falta de estandarizacion — no existe un procedimiento documentado que garantice uniformidad en la ejecucion. (4) Concentracion de conocimiento en pocas personas, generando cuellos de botella y riesgo de continuidad operacional. (5) Ausencia de indicadores en tiempo real que permitan detectar desviaciones de manera proactiva.',
+
+    improve: 'Soluciones propuestas para cada causa raiz: (1) Implementar plataforma digital centralizada que integre los sistemas actuales y automatice la captura de datos. (2) Estandarizar la comunicacion con flujos de aprobacion digitales y notificaciones automaticas. (3) Documentar el proceso TO-BE con procedimientos claros, responsables definidos y tiempos estandar. (4) Transferir el conocimiento critico mediante capacitacion y documentacion accesible para todos los actores. (5) Definir tablero de KPIs en tiempo real con alertas automaticas para desviaciones del proceso.',
+
+    control: 'Mecanismos de control sostenido: Responsable del proceso (' + (p.dueno || 'a definir') + ') con revision semanal de KPIs. Auditoria mensual del proceso TO-BE para verificar cumplimiento. Sistema de alertas automaticas cuando el tiempo de ciclo supere el estandar. Indicadores clave: tiempo de ciclo, tasa de errores, satisfaccion del cliente y numero de reprocesos. Revision trimestral para identificar nuevas oportunidades de mejora continua.'
+  };
+}
+
+function generateKPIs(p, dig, foundCount) {
+  var factor = (5 - dig) * 0.1 + foundCount * 0.06;
+  factor = Math.min(0.7, Math.max(0.2, factor));
+
+  function reduceTime(t) {
+    if (!t) return 'A medir';
+    var m = t.match(/(\d+)/);
+    if (!m) return t + ' (-50%)';
+    var n = parseInt(m[1]);
+    var r = Math.max(1, Math.round(n * (1 - factor)));
+    return t.replace(m[1], String(r)) + ' estimado';
+  }
+
+  var pct = Math.round(factor * 100);
+  var errPct = p.metErrores ? Math.round(parseInt(p.metErrores) * 0.2) : '< 5';
+
+  return [
+    { nom: 'Tiempo de ciclo del proceso', asis: p.metTiempo || 'No medido', tobe: reduceTime(p.metTiempo), delta: '-' + pct + '% estimado' },
+    { nom: 'Tasa de errores y reprocesos', asis: p.metErrores || 'No medido', tobe: errPct + '% o menos', delta: 'Reduccion del 80%' },
+    { nom: 'Costo operativo mensual', asis: p.metCosto || 'No cuantificado', tobe: p.metCosto ? 'Reduccion del ' + Math.round(factor * 0.8 * 100) + '%' : 'A calcular post-implementacion', delta: '-' + Math.round(factor * 0.8 * 100) + '%' },
+    { nom: 'Satisfaccion del cliente (NPS)', asis: p.metNps || 'No medido', tobe: 'Incremento de +30 puntos NPS', delta: '+30 pts estimado' },
+    { nom: 'Nivel de digitalizacion', asis: (p.dig || 1) + '/5', tobe: Math.min(5, (p.dig || 1) + 2) + '/5', delta: '+2 niveles MIEDE' },
+    { nom: 'Pasos del proceso (eficiencia)', asis: parseSteps(p.pasos).length + ' pasos', tobe: Math.round(parseSteps(p.pasos).length * 0.7) + ' pasos', delta: 'Eliminacion del 30% de pasos' },
+    { nom: 'Personas necesarias en el proceso', asis: p.metPersonas || 'No especificado', tobe: 'Reduccion con automatizacion', delta: '-30% horas hombre' }
+  ];
+}
+
+function generateRoadmap(p, dig, wastes, sector, area) {
+  var items = [];
+  var n = 1;
+  var foundW = wastes.filter(function(w) { return w.found; }).map(function(w) { return w.w; });
+
+  // 70% PERSONAS
+  items.push({ pri: n++, accion: 'Realizar taller de levantamiento y validacion del proceso TO-BE con todos los participantes del proceso', cat: 'Personas', plazo: 'Inmediato 0-30 dias', impacto: 'Alineacion del equipo con el nuevo flujo y reduccion de resistencia al cambio. Clave: sin buy-in del equipo, la optimizacion fracasa.' });
+  items.push({ pri: n++, accion: 'Capacitar a todos los roles en el nuevo proceso estandarizado y en las herramientas a implementar', cat: 'Personas', plazo: 'Corto plazo 1-3 meses', impacto: 'Reduccion del 60% en errores por desconocimiento del proceso y aumento de autonomia del equipo.' });
+  items.push({ pri: n++, accion: 'Identificar y documentar el conocimiento critico concentrado en personas clave — transferirlo al equipo', cat: 'Personas', plazo: 'Inmediato 0-30 dias', impacto: 'Elimina la dependencia de personas individuales y reduce el riesgo operacional ante ausencias.' });
+  if (foundW.indexOf('Talento') !== -1) {
+    items.push({ pri: n++, accion: 'Definir roles y responsabilidades claros para cada paso del proceso TO-BE — incluir suplentes', cat: 'Personas', plazo: 'Inmediato 0-30 dias', impacto: 'Cada persona sabe exactamente que le corresponde. Elimina duplicaciones y vacios de responsabilidad.' });
+  }
+
+  // 25% METODOLOGIA
+  items.push({ pri: n++, accion: 'Documentar el proceso TO-BE en formato de procedimiento estandar de operacion (POE) con diagramas BPMN', cat: 'Metodologia', plazo: 'Inmediato 0-30 dias', impacto: 'Proceso documentado que puede ser auditado, medido y mejorado continuamente. Base de la estandarizacion.' });
+  items.push({ pri: n++, accion: 'Definir KPIs del proceso y establecer tablero de seguimiento mensual con el dueno del proceso', cat: 'Metodologia', plazo: 'Corto plazo 1-3 meses', impacto: 'Visibilidad del desempeno del proceso en tiempo real. Permite detectar desviaciones antes de que impacten al cliente.' });
+  if (foundW.indexOf('Defectos') !== -1) {
+    items.push({ pri: n++, accion: 'Implementar checklists de calidad en los puntos criticos del proceso para prevenir errores antes de que ocurran', cat: 'Metodologia', plazo: 'Inmediato 0-30 dias', impacto: 'Reduccion del 80% en tasa de errores y reprocesos en las primeras 4 semanas.' });
+  }
+
+  // 5% TECNOLOGIA
+  items.push({ pri: n++, accion: 'Implementar herramienta de gestion de proceso ' + getTechTool(dig, area, sector) + ' para automatizar flujos y eliminar registro manual', cat: 'Tecnologia', plazo: 'Mediano plazo 3-6 meses', impacto: 'Reduccion del tiempo de ciclo en ' + Math.round((5 - dig) * 10 + 20) + '% y eliminacion de reprocesos por informacion desactualizada.' });
+  if (dig <= 2) {
+    items.push({ pri: n++, accion: 'Digitalizar los formularios y documentos del proceso — eliminar el uso de papel y registro manual', cat: 'Tecnologia', plazo: 'Corto plazo 1-3 meses', impacto: 'Informacion accesible en tiempo real por todos los participantes. Elimina busquedas y solicitudes de informacion.' });
+  }
+
+  return items;
+}
+
+function getTechTool(dig, area, sector) {
+  if (area.match(/ventas|comercial/i)) return '(CRM tipo Salesforce o HubSpot)';
+  if (area.match(/finanzas|contabilidad/i)) return '(ERP tipo SAP, Oracle o similar)';
+  if (area.match(/logistica|cadena/i)) return '(WMS o plataforma de gestion de pedidos)';
+  if (area.match(/recursos humanos/i)) return '(HRMS tipo BambooHR o SAP SuccessFactors)';
+  if (dig <= 2) return '(plataforma BPM o de flujos de trabajo como Monday.com, Bizagi o Kissflow)';
+  return '(herramienta de automatizacion de procesos acorde al sector)';
+}
+
+function generateMaturity(p, dig) {
+  var txt = (p.sistemas + ' ' + p.pasos).toLowerCase();
+  var personas = Math.min(5, dig + (txt.match(/capacitacion|entrenamiento|conocimiento/) ? 1 : 0));
+  var metodologia = Math.min(5, Math.max(1, dig - 1 + (txt.match(/procedimiento|manual|estandar|proceso definido/) ? 1 : 0)));
+  var tecnologia = Math.min(5, Math.max(1, dig));
+  var datos = Math.min(5, Math.max(1, dig - 1 + (txt.match(/indicador|kpi|reporte|dashboard|metrica/) ? 1 : 0)));
+  var score = Math.round((personas + metodologia + tecnologia + datos) / 4);
+
+  var insights = [
+    'El proceso se encuentra en una etapa inicial de madurez digital. La prioridad inmediata bajo MIEDE 2.0 es establecer bases de personas (roles, responsabilidades y capacitacion) antes de cualquier inversion tecnologica. El 70% del esfuerzo debe concentrarse en cultura y habilidades.',
+    'El proceso muestra una digitalizacion basica pero con importantes brechas en estandarizacion. Bajo MIEDE 2.0, la siguiente etapa requiere fortalecer la metodologia (documentacion, KPIs, mejora continua) para que la tecnologia tenga bases solidas sobre las cuales escalar.',
+    'El proceso tiene fundamentos digitales moderados. MIEDE 2.0 indica que es el momento optimo para integrar herramientas especializadas y comenzar a trabajar con datos para la toma de decisiones, una vez que el proceso este estandarizado y el equipo capacitado.',
+    'El proceso presenta un buen nivel de madurez. La ruta MIEDE 2.0 apunta hacia la incorporacion de inteligencia artificial y automatizacion avanzada como capa transversal, potenciando las capacidades existentes del equipo y los sistemas.',
+    'Nivel de madurez alto. MIEDE 2.0 indica que este proceso esta listo para incorporar IA generativa y analisis predictivo. El foco debe ser la optimizacion continua y la innovacion exponencial en la experiencia del cliente del proceso.'
+  ];
+
+  return {
+    personas: personas, metodologia: metodologia, tecnologia: tecnologia, datos: datos,
+    score: score,
+    insight: insights[Math.min(score - 1, 4)]
+  };
+}
+
+/* ========================================================
+   RENDER DE RESULTADOS
+   ======================================================== */
+function renderResults(d) {
+  var p = APP.cur, r = d.resumen || {};
+  var html = '<div class="resbanner">'
+    + '<div class="reseye">Analisis completado &mdash; Transformacion ExO &middot; MIEDE 2.0</div>'
+    + '<div class="respname">' + esc(p.nombre) + '</div>'
+    + '<div class="resarea">' + esc(p.area) + ' &bull; ' + esc(p.sector) + '</div>'
+    + '<div class="reskpis">'
+    + rk(r.pasos_asis || '?', 'Pasos AS-IS')
+    + rk(r.pasos_tobe || '?', 'Pasos TO-BE')
+    + rk(r.desperdicios || '?', 'Desperdicios Lean')
+    + rk(r.red_tiempo || '—', 'Reduccion tiempo')
+    + rk(r.red_costo || '—', 'Reduccion costo')
+    + rk((r.madurez || '?') + '/5', 'Madurez digital')
+    + '</div></div>';
+
+  // AS-IS vs TO-BE
+  html += '<div class="card"><div class="sh"><div class="sb" style="background:var(--blue)"></div><div class="stitle">Proceso AS-IS vs TO-BE</div></div>'
+    + '<div class="cmphead"><div class="clbl c-asis">Proceso actual (AS-IS)</div><div class="carr">&#8594;</div><div class="clbl c-tobe">Proceso optimizado (TO-BE)</div></div>'
+    + '<div class="sgrid"><div class="sflow">' + buildStepsHtml(d.asis || [], 'asis') + '</div><div class="sflow">' + buildStepsHtml(d.tobe || [], 'tobe') + '</div></div></div>';
+
+  // LEAN
+  var found = (d.lean || []).filter(function(w) { return w.found; }).length;
+  html += '<div class="card"><div class="sh"><div class="sb" style="background:var(--amber)"></div><div class="stitle">Analisis Lean — 8 Desperdicios</div><div class="scnt">' + found + ' de 8 detectados</div></div>'
+    + '<div class="wgrid">' + buildWastesHtml(d.lean || []) + '</div></div>';
+
+  // DMAIC
+  html += '<div class="card"><div class="sh"><div class="sb" style="background:var(--red)"></div><div class="stitle">Analisis DMAIC — Six Sigma</div></div>'
+    + '<div class="dmaic-wrap">' + buildDMAICHtml(d.dmaic || {}) + '</div></div>';
+
+  // KPIs
+  html += '<div class="card"><div class="sh"><div class="sb" style="background:var(--green)"></div><div class="stitle">KPIs — Antes vs despues</div></div>'
+    + '<table class="ktbl"><thead><tr><th>Indicador</th><th>AS-IS (actual)</th><th>TO-BE (optimizado)</th><th>Mejora estimada</th></tr></thead>'
+    + '<tbody>' + buildKPIsHtml(d.kpis || []) + '</tbody></table></div>';
+
+  // Roadmap
+  html += '<div class="card"><div class="sh"><div class="sb" style="background:var(--blue)"></div><div class="stitle">Hoja de ruta de implementacion</div></div>'
+    + '<div class="rmlist">' + buildRoadmapHtml(d.roadmap || []) + '</div>'
+    + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">'
+    + '<span class="rtag rtp">Personas 70%</span><span class="rtag rtm">Metodologia 25%</span><span class="rtag rtt">Tecnologia 5%</span>'
+    + '</div></div>';
+
+  // Maturity
+  html += '<div class="card"><div class="sh"><div class="sb" style="background:var(--blue)"></div><div class="stitle">Madurez digital MIEDE 2.0</div></div>'
+    + '<div class="matgrid">' + buildMaturityHtml(d.madurez || {}) + '</div>'
+    + (d.madurez && d.madurez.insight ? '<div class="miedebox"><div class="miedelogo">M2</div><div class="miedetxt">' + esc(d.madurez.insight) + '</div></div>' : '')
+    + '</div>';
+
+  html += '<div style="display:flex;gap:8px;justify-content:space-between;margin-top:4px">'
+    + '<button class="btn" onclick="showScreen(\'diag\')">&#8592; Ver diagrama</button>'
+    + '<button class="btn" onclick="showList()">Mis procesos</button>'
+    + '</div>';
+
+  document.getElementById('analysis-body').innerHTML = html;
+}
+
+function rk(v, l) { return '<div class="rk"><div class="rkv">' + esc(String(v)) + '</div><div class="rkl">' + esc(l) + '</div></div>'; }
+
+function buildStepsHtml(steps, mode) {
+  var ci = { inicio: '#2563eb', actividad: mode === 'asis' ? '#6366f1' : '#16a34a', decision: '#d97706', espera: '#f59e0b', fin: '#16a34a', automatico: '#0d9488' };
+  return steps.map(function(s, i) {
+    var last = (i === steps.length - 1);
+    var c = ci[s.tipo] || (mode === 'asis' ? '#6366f1' : '#16a34a');
+    var bc = s.es_cuello ? 'sb-ab' : (mode === 'asis' ? 'sb-an' : (s.es_nuevo ? 'sb-tnw' : 'sb-tn'));
+    var lc = mode === 'asis' ? 'var(--bd)' : '#86efac';
+    return '<div class="srow"><div class="slcol"><div class="scirc" style="background:' + c + '">' + (s.n || i + 1) + '</div>'
+      + (!last ? '<div class="sline" style="background:' + lc + '"></div>' : '')
+      + '</div><div class="sbody ' + bc + '">'
+      + '<div class="sname">' + esc(s.nom || '') + (s.es_cuello ? ' ⚠' : '') + (s.es_nuevo ? ' ✦' : '') + '</div>'
+      + '<div class="sdesc">' + esc(s.desc || '') + '</div>'
+      + '<div class="stgs">'
+      + (s.rol ? '<span class="stg stg-r">' + esc(s.rol) + '</span>' : '')
+      + (s.tiempo ? '<span class="stg stg-t">' + esc(s.tiempo) + '</span>' : '')
+      + (s.es_cuello && s.problema ? '<span class="stg stg-b">' + esc(s.problema) + '</span>' : '')
+      + (mode === 'tobe' && s.mejora ? '<span class="stg stg-g">' + esc(s.mejora) + '</span>' : '')
+      + '</div></div></div>';
+  }).join('');
+}
+
+function buildWastesHtml(items) {
+  return items.map(function(w) {
+    var cls = w.found ? 'wc-f' : 'wc-o';
+    var bc = w.found ? 'wb-f' : 'wb-o';
+    return '<div class="wcard ' + cls + '"><div class="wico">' + (w.ico || '•') + '</div>'
+      + '<div class="wnm">' + esc(w.w) + '</div>'
+      + '<div class="wdc">' + esc(w.desc || '') + '</div>'
+      + '<span class="wbg ' + bc + '">' + (w.found ? '⚠ Detectado' : '✓ No aplica') + '</span></div>';
+  }).join('');
+}
+
+function buildDMAICHtml(dm) {
+  return [['D','Definir','define'],['M','Medir','measure'],['A','Analizar','analyze'],['I','Mejorar','improve'],['C','Controlar','control']].map(function(ph, i, a) {
+    var bd = i < a.length - 1 ? 'border-bottom:1px solid var(--bd)' : '';
+    return '<div class="dm-row" style="' + bd + '"><div class="dm-ph"><div class="dm-lt">' + ph[0] + '</div><div class="dm-nm">' + ph[1] + '</div></div>'
+      + '<div class="dm-co">' + esc(dm[ph[2]] || '—') + '</div></div>';
+  }).join('');
+}
+
+function buildKPIsHtml(kpis) {
+  return kpis.map(function(k) {
+    return '<tr><td class="kn">' + esc(k.nom || '') + '</td><td class="ka">' + esc(k.asis || '') + '</td>'
+      + '<td class="kt">' + esc(k.tobe || '') + '</td><td><span class="kd">' + esc(k.delta || '') + '</span></td></tr>';
+  }).join('');
+}
+
+function buildRoadmapHtml(items) {
+  var cl = { Personas: '#2563eb', Metodologia: '#d97706', Tecnologia: '#16a34a' };
+  var tc = { Personas: 'rtp', Metodologia: 'rtm', Tecnologia: 'rtt' };
+  return items.map(function(a) {
+    var c = cl[a.cat] || '#2563eb', t = tc[a.cat] || 'rtp';
+    return '<div class="rmitem"><div class="rmnum" style="background:' + c + '">' + (a.pri || '') + '</div>'
+      + '<div class="rmbody"><div class="rmact">' + esc(a.accion || '') + '</div>'
+      + '<div class="rmimpact">' + esc(a.impacto || '') + '</div>'
+      + '<div class="rmtgs"><span class="rtag ' + t + '">' + esc(a.cat || '') + '</span>'
+      + '<span class="rtag rtpl">' + esc(a.plazo || '') + '</span></div></div></div>';
+  }).join('');
+}
+
+function buildMaturityHtml(m) {
+  return [['personas','Personas'],['metodologia','Metodologia'],['tecnologia','Tecnologia'],['datos','Datos / IA']].map(function(d) {
+    var v = parseFloat(m[d[0]]) || 0, pct = Math.round((v / 5) * 100);
+    return '<div class="mati"><div class="matsc">' + v + '<span>/5</span></div>'
+      + '<div class="matlbl">' + d[1] + '</div>'
+      + '<div class="matbg"><div class="matfill" style="width:' + pct + '%"></div></div></div>';
+  }).join('');
+}
+
+/* ========================================================
+   UTILS
+   ======================================================== */
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+if (!Array.prototype.findIndex) {
+  Array.prototype.findIndex = function(fn) { for (var i = 0; i < this.length; i++) { if (fn(this[i])) return i; } return -1; };
+}
+</script>
+</body>
+</html>
